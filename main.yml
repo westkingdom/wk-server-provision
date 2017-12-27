@@ -1,0 +1,72 @@
+---
+- name: web
+  hosts: westkingdom-http
+  user: root
+  become: true
+  become_user: root
+  vars_files:
+    - vars.yml
+
+  roles:
+    - { role: geerlingguy.php }
+    - { role: geerlingguy.drush }
+    - { role: geerlingguy.composer }
+    - { role: geerlingguy.git }
+    - { role: geerlingguy.dotfiles }
+    - { role: geerlingguy.nginx }
+
+
+  tasks:
+    - group:
+        name: users
+        state: present
+
+    - user:
+        name: xalg
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+        ssh_key_file: .ssh/id_rsa
+    - user:
+        name: maint
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+        ssh_key_file: .ssh/maint_rsa
+
+- name: back
+  hosts: westkingdom-back
+  user: root
+  become: true
+  become_user: root
+  vars_files:
+    - vars.yml
+
+  roles:
+    - { role: geerlingguy.php }
+    - { role: geerlingguy.drush }
+    - { role: geerlingguy.composer }
+    - { role: geerlingguy.git }
+    - { role: geerlingguy.dotfiles }
+    - { role: geerlingguy.docker }
+    - { role: geerlingguy.pip }
+    - { role: geerlingguy.mysql }
+
+  tasks:
+    - group:
+        name: users
+        state: present
+
+    - user:
+        name: xalg
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+        ssh_key_file: .ssh/id_rsa
+
+    - user:
+        name: maint
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+        ssh_key_file: .ssh/maint_rsa

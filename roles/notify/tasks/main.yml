@@ -1,0 +1,12 @@
+---
+- name: Send email notification
+  local_action: mail msg='System {{ ansible_hostname }} has been successfully backed up.'
+                subject='Ansible Backup Report'
+                body='These databases have been backed up {{ databases }}'
+                from='karius.hutzelmann@westkingdom.org (Westkingdom)'
+                to='{{ your_name }} <{{ your_email }}>'
+  ignore_errors: true
+  tags:
+    - folders
+    - databases
+    - notification

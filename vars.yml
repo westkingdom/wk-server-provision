@@ -1,0 +1,130 @@
+---
+php_packages:
+  - php7.0-fpm
+  - php7.0-mcrypt
+  - php7.0-mbstring
+folders:
+  - name: wk
+    folder: /var/www/westkingdom
+
+your_name: Vincent Flesouras
+your_email: x.algorithm@gmail.com
+
+#php
+php_enable_webserver: true
+php_install_recommends: yes
+php_executable: "php"
+php_enable_php_fpm: true
+php_memory_limit: "256M"
+php_max_execution_time: "60"
+php_max_input_time: "60"
+php_max_input_vars: "1000"
+php_realpath_cache_size: "32K"
+php_file_uploads: "On"
+php_upload_max_filesize: "64M"
+php_max_file_uploads: "20"
+php_post_max_size: "32M"
+php_date_timezone: "America/Los Angeles"
+php_allow_url_fopen: "On"
+php_sendmail_path: "/usr/sbin/sendmail -t -i"
+php_output_buffering: "4096"
+php_short_open_tag: false
+php_error_reporting: "E_ALL & ~E_DEPRECATED & ~E_STRICT"
+php_display_errors: "Off"
+php_display_startup_errors: "On"
+php_expose_php: "On"
+php_session_cookie_lifetime: 0
+php_session_gc_probability: 1
+php_session_gc_divisor: 1000
+php_session_gc_maxlifetime: 1440
+php_session_save_handler: files
+php_session_save_path: ''
+php_disable_functions: []
+php_enable_apc: true
+php_apc_shm_size: "96M"
+php_apc_enable_cli: "0"
+
+#composer
+composer_path: /usr/local/bin/composer
+composer_keep_updated: true
+composer_home_path: '~/.composer'
+composer_home_owner: root
+composer_home_group: root
+composer_add_to_path: true
+php_executable: php
+
+#dotfiles
+dotfiles_repo: "https://github.com/xalgorithm/gnu-dotfiles.git"
+dotfiles_files:
+  - .aliases
+  - .bash_profile
+  - .bash_prompt
+  - .bashrc
+  - .curlrc
+  - .editorconfig
+  - .exports
+  - .extra
+  - .gdbinit
+  - .gvimrc
+  - .inputrc
+  - .profile
+  - .screenrc
+  - .wgetrc
+
+
+#nginx
+nginx_vhosts:
+  - listen: "443 ssl http2"
+    server_name: "westkingdom.org"
+    server_name_redirect: "www.westkingdom.org"
+    root: "/var/www/wk"
+    index: "index.php index.html index.htm"
+    error_page: ""
+    access_log: ""
+    error_log: ""
+    state: "present"
+    template: "{{ nginx_vhost_template }}"
+    filename: "westkingdom.conf"
+    extra_parameters: |
+      location ~ \.php$ {
+          fastcgi_split_path_info ^(.+\.php)(/.+)$;
+          fastcgi_pass unix:/var/run/php5-fpm.sock;
+          fastcgi_index index.php;
+          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+          include fastcgi_params;
+      }
+      ssl_certificate     /etc/ssl/certs/ssl-cert-snakeoil.pem;
+      ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
+      ssl_protocols       TLSv1.1 TLSv1.2;
+      ssl_ciphers         HIGH:!aNULL:!MD5;
+nginx_user: "nginx"
+nginx_worker_processes: "{{ ansible_processor_vcpus|default(ansible_processor_count) }}"
+nginx_worker_connections: "1024"
+nginx_multi_accept: "off"
+nginx_sendfile: "on"
+nginx_tcp_nopush: "on"
+nginx_tcp_nodelay: "on"
+nginx_keepalive_timeout: "65"
+nginx_keepalive_requests: "100"
+nginx_server_tokens: "off"
+nginx_client_max_body_size: "64m"
+
+#git
+workspace: /root
+git_packages:
+  - git
+  - git-svn
+git_install_from_source: false
+
+#mysql
+mysql_user_home: /maint
+mysql_user_name: maint
+mysql_user_password: West1066Rocks!
+mysql_enabled_on_startup: yes
+overwrite_global_mycnf: yes
+
+#docker
+docker_edition: 'ce'
+
+pip_install_packages:
+  - name: docker
